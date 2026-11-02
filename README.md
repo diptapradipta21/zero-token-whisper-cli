@@ -4,7 +4,7 @@
 [![Zero Token Cost](https://img.shields.io/badge/LLM%20Tokens-0-green.svg)](#)
 [![Faster-Whisper](https://img.shields.io/badge/Engine-Faster--Whisper-orange.svg)](#)
 
-> **Offline local video & audio subtitle generator. Produces karaoke-style ASS / SRT subtitles with keyword highlights without burning AI tokens.**
+> **Offline local video & audio subtitle generator. Produces karaoke-style ASS and standard SRT subtitles with keyword highlights without burning AI tokens.**
 
 ---
 
@@ -13,7 +13,23 @@
 ```bash
 # Generate ASS subtitles with highlighted golden keywords
 python3 subtitler.py video.mp4 --keywords "AI,token,viral,profit"
+
+# Generate standard SRT subtitles
+python3 subtitler.py video.mp4 -o output.srt
+
+# Specify language and Whisper model size
+python3 subtitler.py video.mp4 -l en --model small
 ```
+
+---
+
+## ⚙️ Options & Flags
+- `--output`, `-o`: Output file path (`.ass` or `.srt`).
+- `--format`, `-f`: Explicit format selection (`ass` or `srt`, auto-detected by default).
+- `--language`, `-l`: Force transcription language code (e.g. `en`, `id`).
+- `--model`: Model size (`tiny`, `base`, `small`, `medium`).
+- `--device`: Compute device (`cpu` or `cuda`).
+- `--keywords`: Comma-separated words to highlight in karaoke ASS style.
 
 ---
 
