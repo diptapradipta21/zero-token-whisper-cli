@@ -38,3 +38,9 @@ python3 subtitler.py video.mp4 -l en --model small
 
 ## 📄 License
 MIT License - Copyright (c) 2026 Fajar Indra Pradipta Gajah.
+
+## 🧪 Testing
+
+```bash
+python3 -m unittest discover tests
+```
