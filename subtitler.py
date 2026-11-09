@@ -2,7 +2,7 @@
 """
 zero-token-whisper-cli — Instant Local Video & Audio Subtitle Generator.
 Transcribes media locally via Faster-Whisper, formats timestamps,
-and generates karaoke-style ASS, standard SRT, or modern WebVTT subtitle files with keyword highlights (0 token LLM cost).
+and generates karaoke-style ASS, standard SRT, modern WebVTT, or clean plain TXT transcript files (0 token LLM cost).
 """
 
 from __future__ import annotations
@@ -119,11 +119,21 @@ def generate_vtt(segments: List[Any], output_vtt: str) -> None:
     print(f"[✓] Generated WebVTT subtitle file: {output_vtt}")
 
 
+def generate_txt(segments: List[Any], output_txt: str) -> None:
+    """Export plain text transcript without timestamps or formatting headers."""
+    with open(output_txt, "w", encoding="utf-8") as f:
+        for s in segments:
+            line = s.text.strip()
+            if line:
+                f.write(f"{line}\n")
+    print(f"[✓] Generated plain text transcript file: {output_txt}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Zero-Token Offline Subtitle Generator via Faster-Whisper.")
     parser.add_argument("media", help="Path to input video or audio file")
-    parser.add_argument("--output", "-o", help="Path to output subtitle file (.ass, .srt, or .vtt)")
-    parser.add_argument("--format", "-f", choices=["ass", "srt", "vtt"], help="Subtitle format (default: auto from extension, or ass)")
+    parser.add_argument("--output", "-o", help="Path to output subtitle file (.ass, .srt, .vtt, or .txt)")
+    parser.add_argument("--format", "-f", choices=["ass", "srt", "vtt", "txt"], help="Subtitle format (default: auto from extension, or ass)")
     parser.add_argument("--model", default="base", help="Whisper model size (tiny, base, small, medium, default: base)")
     parser.add_argument("--language", "-l", help="Language code (e.g. 'en', 'id'). Omit for auto-detection.")
     parser.add_argument("--device", default="cpu", choices=["cpu", "cuda"], help="Inference device (cpu, cuda, default: cpu)")
@@ -146,6 +156,8 @@ def main() -> None:
                 target_format = "srt"
             elif low.endswith(".vtt"):
                 target_format = "vtt"
+            elif low.endswith(".txt"):
+                target_format = "txt"
             else:
                 target_format = "ass"
         else:
@@ -185,6 +197,8 @@ def main() -> None:
             generate_srt(segments_list, out_file)
         elif target_format == "vtt":
             generate_vtt(segments_list, out_file)
+        elif target_format == "txt":
+            generate_txt(segments_list, out_file)
         else:
             kw_list = args.keywords.split(",") if args.keywords else []
             generate_ass(segments_list, out_file, kw_list)

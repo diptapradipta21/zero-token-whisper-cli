@@ -9,7 +9,7 @@ from pathlib import Path
 # Ensure repo root is on sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from subtitler import generate_ass, generate_srt, generate_vtt
+from subtitler import generate_ass, generate_srt, generate_vtt, generate_txt
 
 
 @dataclass
@@ -49,6 +49,14 @@ class TestSubtitler(unittest.TestCase):
         self.assertIn("00:00:01.250 --> 00:00:04.500", content)
         self.assertIn("Hello and welcome to the show", content)
 
+    def test_generate_txt(self):
+        out_txt = Path(self.test_dir) / "output.txt"
+        generate_txt(self.segments, str(out_txt))
+        self.assertTrue(out_txt.exists())
+
+        content = out_txt.read_text(encoding="utf-8")
+        self.assertEqual(content, "Hello and welcome to the show\nToday we discuss zero-token AI agents\n")
+
     def test_generate_ass_with_keyword_highlight(self):
         out_ass = Path(self.test_dir) / "output.ass"
         generate_ass(self.segments, str(out_ass), highlight_keywords=["zero-token", "show"])
@@ -57,7 +65,6 @@ class TestSubtitler(unittest.TestCase):
         content = out_ass.read_text(encoding="utf-8")
         self.assertIn("[Script Info]", content)
         self.assertIn("PlayResX: 1080", content)
-        # Check keyword color override
         self.assertIn(r"{\c&H0038BDF8&}SHOW{\c&H00FFFFFF&}", content)
         self.assertIn(r"{\c&H0038BDF8&}ZERO-TOKEN{\c&H00FFFFFF&}", content)
 
